@@ -6,6 +6,7 @@ DISCLAIMER: This is an educational/research clinical decision-support prototype.
 It is NOT a definitive medical diagnostic tool.
 """
 
+import utils.session
 import os
 import sys
 import io
@@ -13,8 +14,6 @@ import logging
 from contextlib import asynccontextmanager
 
 import numpy as np
-import torch
-import torch.nn.functional as F
 from PIL import Image
 from fastapi import FastAPI, UploadFile, File, HTTPException, Form
 from fastapi.middleware.cors import CORSMiddleware
@@ -24,6 +23,34 @@ from fastapi.responses import FileResponse
 # Add project root to path
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, project_root)
+
+
+def _init_xgboost_before_torch():
+    """
+    On macOS, loading XGBoost after PyTorch can segfault (OpenMP conflict).
+    Warm up XGBoost by loading joblib artifacts before any torch import.
+    """
+    if sys.platform != "darwin":
+        return
+    import joblib
+
+    models_dir = os.path.join(project_root, "models")
+    for filename in (
+        "symptom_model.joblib",
+        "clinical_model.joblib",
+        "general_disease_ensemble.joblib",
+    ):
+        path = os.path.join(models_dir, filename)
+        if os.path.exists(path):
+            joblib.load(path)
+            logger = logging.getLogger(__name__)
+            logger.info("macOS XGBoost warmup: loaded %s", filename)
+
+
+_init_xgboost_before_torch()
+
+import torch
+import torch.nn.functional as F
 
 from api.schemas import (
     SymptomRequest, ClinicalRequest, MultimodalRequest,

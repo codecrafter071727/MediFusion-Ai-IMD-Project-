@@ -47,11 +47,12 @@ class ModelRegistry:
         """Load all available models from the models directory."""
         logger.info(f"Loading models from {models_dir}...")
         
-        self._load_image_model(models_dir)
+        # Load sklearn/XGBoost models before PyTorch weights (macOS OpenMP safety).
         self._load_symptom_model(models_dir)
         self._load_clinical_model(models_dir)
-        self._load_fusion_model(models_dir)
         self._load_general_disease_model(models_dir)
+        self._load_image_model(models_dir)
+        self._load_fusion_model(models_dir)
         
         loaded_count = sum(self._loaded.values())
         logger.info(f"Model loading complete: {loaded_count}/{len(self._loaded)} models loaded")

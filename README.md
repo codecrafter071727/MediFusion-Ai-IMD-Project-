@@ -180,12 +180,16 @@ source venv/bin/activate
 
 # Install requirements
 pip install -r requirements.txt
+
+# macOS only: XGBoost needs the OpenMP runtime
+brew install libomp
 ```
 
 ### 3. Run the Web Application
-Start the FastAPI server:
+Start the FastAPI server (on macOS, use `./run.sh` or set `OMP_NUM_THREADS=1` to avoid startup hangs):
 ```bash
-uvicorn api.main:app --reload --port 8000
+./run.sh
+# or: OMP_NUM_THREADS=1 uvicorn api.main:app --reload --port 8000
 ```
 
 Once running, launch your browser and navigate to:

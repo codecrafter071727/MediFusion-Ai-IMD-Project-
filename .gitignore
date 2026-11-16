@@ -50,7 +50,6 @@ coverage.xml
 cover/
 
 # Environments
-.env
 .venv
 env/
 venv/
@@ -59,7 +58,6 @@ env.bak/
 venv.bak/
 
 # IDE & OS
-.vscode/
 .idea/
 *.swp
 *.swo
@@ -71,3 +69,5 @@ desktop.ini
 # Scratch and temp logs
 *.log
 scratch/
+config.bat
+node_modules

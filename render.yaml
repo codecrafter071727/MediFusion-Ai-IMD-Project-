@@ -1,0 +1,21 @@
+# Render Blueprint — MediFusion AI
+# Deploy: Dashboard → Blueprints → New Blueprint → connect this repo
+# Or create a Web Service manually and point at this Dockerfile.
+
+services:
+  - type: web
+    name: medifusion-ai
+    runtime: docker
+    plan: standard
+    region: singapore
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: OMP_NUM_THREADS
+        value: "1"
+      - key: MKL_NUM_THREADS
+        value: "1"
+      - key: OPENBLAS_NUM_THREADS
+        value: "1"
+      - key: PYTHONUNBUFFERED
+        value: "1"
